@@ -112,26 +112,29 @@ table(articles$migr_perp, articles$language_active)/rowSums(table(articles$migr_
 # struct_context | migr_perp
 table(articles$migr_perp, articles$struct_context)/rowSums(table(articles$migr_perp, articles$struct_context))
   # among cases with non-migrant offender, ~30% were placed in structural context
-# struct_problem | migr_perp: among cases with migrant offender, how often with structural discourse
+# struct_problem | migr_perp
 table(articles$migr_perp, articles$struct_problem)
+  # about as many articles with structural discourse among migrant and non-migrant offenders
 # blame_perp | migr_perp
 table(articles$migr_perp, articles$blame_perp)/rowSums(table(articles$migr_perp, articles$blame_perp))
   # used childhood/mental health to justify crime in 8% of cases for non-migrant, in 10% for migrant
 
 # source
 table(articles$source)  # more than half from Bild
-# ipv_in_text | source: for each newspaper, how often explicit use of term "IPV"
-table(articles$source, articles$ipv_in_text)  # most balanced for SZ, least for Bild
-# language_active | source
+# ipv_in_text | source: for each newspaper, how often explicit use of term "IPV"/"DV"?
+table(articles$source, articles$ipv_in_text)
+  # most balanced for SZ, least for Bild
+# language_active | source: for each newspaper, how often used passive/active language?
 table(articles$source, articles$language_active)/rowSums(table(articles$source, articles$language_active))
-  # Spiegel used passive language (=1) the most, SZ the least
+  # Spiegel used passive language (=1) the most, Bild the least
 # ethn_victim | source
 table(articles$source, articles$ethn_victim)/rowSums(table(articles$source, articles$ethn_victim))
-  # proportionally, SZ mentioned victim's ethnicity most
+  # proportionally, FAZ mentioned victim's ethnicity most
 # ethn_perp | source
 table(articles$source, articles$ethn_perp)/rowSums(table(articles$source, articles$ethn_perp))
   # FAZ, SZ mentioned perpetrator's ethnicity most
 # blame_victim | source
-table(articles$source, articles$blame_victim)  # victim blaming only perceived for Bild articles
+table(articles$source, articles$blame_victim)  
+  # victim blaming only perceived for Bild articles
 
       
