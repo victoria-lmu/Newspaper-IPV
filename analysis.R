@@ -22,31 +22,58 @@ str(articles)
 # 2. Analysis ----
 
 #### 1) Description ----
-questions_fac <- sapply(articles, is.factor)[-c(10, 11, 23)]  # without ipv_type, gender_author, gender_victim for now
-articles_fac <- gather(articles, variable, value, names(articles[-c(10, 11, 23)][questions_fac == 1]))
+questions_fac <- sapply(articles, is.factor)[-c(10, 11, 16, 17, 23)]
+  # without ipv_type, gender_author, gender_victim, migr_victim, migr_perp for now
+articles_fac <- gather(articles, variable, value, names(articles[-c(10, 11, 16, 17, 23)][questions_fac == 1]))
 ggplot(articles_fac, aes(x = value)) +
   geom_bar(aes()) +
   facet_wrap(facets = ~variable) +
   labs(title = "Absolute Counts for Categorical Variables")
 
 ggplot(articles_fac, aes(x = factor(variable), fill = factor(value))) +
-  geom_bar(position = "fill") +
+  geom_bar(position = "fill",  width = 0.8) +
   coord_flip() +
   labs(y = "Proportion",
        title = "Description for Binarised Questions") +
-  theme(axis.title.y = element_blank(),
-        legend.title = element_blank()) +
-  scale_fill_brewer(palette = 2, direction = 1,
-                    labels = c("False", "True", "NA"))
+  scale_fill_manual(values = c( "darkseagreen3","darkseagreen4", "gray90"),
+                    labels = c("False", "True", "NA")) +
+  scale_x_discrete(labels = rev(c("IPV not addressed as\n structural problem",
+                     "Similar past incidents not mentioned",
+                     "Murder as 'tragedy'",
+                     #"Victim is a migrant",
+                     #"Perpetrator is a migrant",
+                     "Passive language",
+                     "IPV not in title",
+                     "IPV not in text",
+                     "Incident not in title",
+                     "Mention of victim's ethnicity",
+                     "Mention of perpetrator's ethnicity",
+                     "Incident framed in episodic way",
+                     "Victim is blamed",
+                     "Perpetrator's behaviour justified\n with psychological state",
+                     "Assault/Attack as 'fight'/'quarrel'"))) +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 10),
+        legend.title = element_blank(),
+        panel.grid.major = element_line(colour = "grey"),
+        panel.grid.minor = element_line(colour = "lightgrey"))
+ggsave("description.png", path = "./plots")
 
+
+# If ethnicity given, migrant yes/no? -> Fließtext descriptions
 # ethn_victim
-table(articles$ethn_victim)/nrow(articles)  # only ~22% gave info on victim's ethnicity
+table(articles$ethn_victim)/nrow(articles)  # only ~22% (28 articles) gave info on victim's ethnicity
+# migr_victim | ethn_victim
+table(articles$ethn_victim, articles$migr_victim)/rowSums(table(articles$ethn_victim, articles$migr_victim))
+  # if ethnicity of victim given (in 28 articles), 79% were migrants
 
 # ethn_perp
-table(articles$ethn_perp)/nrow(articles)  # ~42% gave info on perpetrator's ethnicity
+table(articles$ethn_perp)/nrow(articles)  # ~42% (54 articles) gave info on perpetrator's ethnicity
 # migr_perp | ethn_perp: among perpetrators with known ethnicity, how many were migrants?
 table(articles$ethn_perp, articles$migr_perp)/rowSums(table(articles$ethn_perp, articles$migr_perp))
   # if their ethnicity was known (second row), they were migrants in 72% of these cases
+
 
 # migr_perp: around half did not give info on ethnicity, so also no info on migration history
 # language_passive | migr_perp
@@ -111,14 +138,28 @@ q2 <- articles %>%
                 attack_quarrel, murder_tragedy, language_passive) %>%
   gather(variable, value)
 ggplot(q2, aes(x = factor(variable), fill = factor(value))) +
-  geom_bar(position = "fill") +
+  geom_bar(position = "fill",  width = 0.8) +
   coord_flip() +
   labs(y = "Proportion",
        title = "Linguistic Framing") +
-  scale_fill_brewer(palette = 3,
+  scale_fill_manual(values = c("lightblue", "lightblue4", "gray90"),
                     labels = c("False", "True")) +
-  theme(axis.title.y = element_blank(),
-        legend.title = element_blank())
+  scale_x_discrete(labels = c("murder_tragedy" = "Murder as 'tragedy'",
+                              "language_passive" = "Passive Language",
+                              "ipv_not_in_title" = "IPV not in title",
+                              "ipv_not_in_text" = "IPV not in text",
+                              "incident_not_in_title" = "Incident not in title",
+                              "blame_victim" = "Victim is blamed",
+                              "blame_perp" = "Perpetrator's behaviour justified\n with psychological state",
+                              "attack_quarrel" = "Assault/Attack as 'fight'/'quarrel'")) +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 10),
+        legend.title = element_blank(),
+        panel.grid.major = element_line(colour = "grey"),
+        panel.grid.minor = element_line(colour = "lightgrey"))
+ggsave("ling_framing.png", path = "./plots")
+
 # attack_quarrel
 table(articles$attack_quarrel)/nrow(articles) # ~7.7% circumscribed attack as quarrel/argument/disagreement
 # blame_perp
@@ -146,6 +187,40 @@ length(grep("Häusliche Gewalt", articles$keywords))/nrow(articles)  # but 12% t
 # proportion of cases that were femicides
 length(grep("Femizid", articles$keywords))/nrow(articles)  # more than 50%
 
+# by source
+q2_faceted <- articles %>%
+  select(source,
+         incident_not_in_title, ipv_not_in_title, ipv_not_in_text,
+         blame_victim, blame_perp,
+         attack_quarrel, murder_tragedy, language_passive) %>%
+  pivot_longer(cols = -source, names_to = "variable", values_to = "value")
+ggplot(q2_faceted, aes(x = variable, fill = factor(value))) +
+  geom_bar(position = "fill", width = 0.8) +
+  coord_flip() +
+  # order so that left-leaning newspapers in left column, right in right
+  facet_wrap(~forcats::fct_relevel(source, "SZ", "FAZ", "Spiegel", "Bild")) + 
+  labs(y = "Proportion",
+       title = "Linguistic Framing by Source") +
+  scale_fill_manual(values = c("lightblue", "lightblue4", "gray90"),
+                    labels = c("False", "True")) +
+  scale_x_discrete(labels = c(
+    "murder_tragedy" = "Murder as tragedy",
+    "language_passive" = "Passive Language",
+    "ipv_not_in_title" = "IPV not in title",
+    "ipv_not_in_text" = "IPV not in text",
+    "incident_not_in_title" = "Incident not in title",
+    "blame_victim" = "Victim is blamed",
+    "blame_perp" = "Perpetrator's behaviour justified\nwith psychological state",
+    "attack_quarrel" = "Assault/Attack as 'fight'/'quarrel'")) +
+  theme(plot.title = element_text(hjust = 0.5),
+        strip.text = element_text(size = 12),
+        axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 10),
+        legend.title = element_blank(),
+        panel.grid.major = element_line(colour = "grey"),
+        panel.grid.minor = element_line(colour = "lightgrey"))
+ggsave("ling_framing_faceted.png", path = "./plots")
+
 
 
 #### 3) Contextualisation ----
@@ -158,8 +233,17 @@ ggplot(q3, aes(x = factor(variable), fill = factor(value))) +
        title = "Missing Contextualisation") +
   scale_fill_brewer(palette = 7,
                     labels = c("False", "True")) +
-  theme(axis.title.x = element_blank(),
-        legend.title = element_blank())
+  scale_x_discrete(labels = c(
+    "episodic_framing" = "Incident framed in episodic way",
+    "struct_context_no" = "Similar past incidents not mentioned",
+    "struct_problem_no" = "IPV not addressed as structural problem")) +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(size = 12),
+        legend.title = element_blank(),
+        panel.grid.major = element_line(colour = "grey"),
+        panel.grid.minor = element_line(colour = "lightgrey"))
+ggsave("context.png", path = "./plots")
 # episodic_framing:  ~ 2/3 described incident as single, isolated (no history of incidents within relationship was given)
 # struct_context_no: ~77% did not embed the incident in broader context, i.e. did not mention other similar cases
 # struct_problem_no: ~10% described incident as structural issue, rest without any discourse on the problem
