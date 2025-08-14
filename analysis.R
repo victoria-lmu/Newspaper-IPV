@@ -170,6 +170,7 @@ ggplot(q2, aes(x = factor(variable), fill = factor(value))) +
         axis.title.y = element_blank(),
         axis.text.y = element_text(size = 10),
         legend.title = element_blank(),
+        legend.text = element_text(size = 10),
         panel.grid.major = element_line(colour = "lightgrey"),
         panel.grid.minor = element_line(colour = "lightgrey", linetype = "dashed"))
 ggsave("ling_framing.png", path = "./plots", width = 8)
@@ -300,6 +301,7 @@ ggplot(q3_faceted, aes(x = variable, fill = fill_key)) +
         axis.title.x = element_blank(),
         axis.text.x = element_blank(),
         legend.title = element_blank(),
+        legend.text = element_text(size = 7.5),
         legend.position = "bottom",
         panel.grid.major = element_line(colour = "lightgrey"),
         panel.grid.minor = element_line(colour = "lightgrey", linetype = "dashed"))
@@ -335,6 +337,7 @@ ggplot(q3_faceted2, aes(x = variable, fill = fill_key)) +
         axis.title.x = element_blank(),
         axis.text.x = element_blank(),
         legend.title = element_blank(),
+        legend.text = element_text(size = 7.5),
         legend.position = "bottom",
         panel.grid.major = element_line(colour = "lightgrey"),
         panel.grid.minor = element_line(colour = "lightgrey", linetype = "dashed"))
