@@ -56,23 +56,57 @@ ggplot(articles_fac, aes(x = factor(variable), fill = factor(value))) +
         axis.title.y = element_blank(),
         axis.text.y = element_text(size = 10),
         legend.title = element_blank(),
-        panel.grid.major = element_line(colour = "grey"),
-        panel.grid.minor = element_line(colour = "lightgrey"))
+        panel.grid.major = element_line(colour = "lightgrey"),
+        panel.grid.minor = element_line(colour = "lightgrey", linetype = "dashed"))
 ggsave("description.png", path = "./plots")
 
 
-# If ethnicity given, migrant yes/no? -> Fließtext descriptions
+##### Fließtext descriptions for source, ethnicity & migr ----
+
+# source
+table(articles$source)  # more than half from Bild
+
+
 # ethn_victim
 table(articles$ethn_victim)/nrow(articles)  # only ~22% (28 articles) gave info on victim's ethnicity
-# migr_victim | ethn_victim
+# ethn_victim | source
+table(articles$source, articles$ethn_victim)/rowSums(table(articles$source, articles$ethn_victim))
+  # FAZ & SZ mentioned victim's ethnicity most
+
+# migr_victim | ethn_victim: If ethnicity given, migrant yes/no?
 table(articles$ethn_victim, articles$migr_victim)/rowSums(table(articles$ethn_victim, articles$migr_victim))
   # if ethnicity of victim given (in 28 articles), 79% were migrants
+# grouped by source:
+table(articles[articles$source == "SZ", "ethn_victim", drop = T], articles[articles$source == "SZ", "migr_victim", drop = T])
+  # SZ: if ethnicity of victim given (4 articles), all of them were migrants
+table(articles[articles$source == "Spiegel", "ethn_victim", drop = T], articles[articles$source == "Spiegel", "migr_victim", drop = T])
+  # Spiegel: if ethnicity given (3 articles), in 2 of them victim was migrant
+table(articles[articles$source == "FAZ", "ethn_victim", drop = T], articles[articles$source == "FAZ", "migr_victim", drop = T])
+  # FAZ: if ethnicity given (6 articles), in 5 of them victim was migrant
+table(articles[articles$source == "Bild", "ethn_victim", drop = T], articles[articles$source == "Bild", "migr_victim", drop = T])
+  # Bild: if ethnicity given (15 articles), in 11 of them the victim was migrant
+
+
 
 # ethn_perp
-table(articles$ethn_perp)/nrow(articles)  # ~42% (54 articles) gave info on perpetrator's ethnicity
+table(articles$ethn_perp)/nrow(articles)  # ~42% (54 articles) gave info on perpetrator's ethnicity -> almost 2x as much as for victim ethnicity
+# ethn_perp | source
+table(articles$source, articles$ethn_perp)/rowSums(table(articles$source, articles$ethn_perp))
+  # FAZ & SZ mentioned perpetrator's ethnicity most
+
 # migr_perp | ethn_perp: among perpetrators with known ethnicity, how many were migrants?
 table(articles$ethn_perp, articles$migr_perp)/rowSums(table(articles$ethn_perp, articles$migr_perp))
-  # if their ethnicity was known (second row), they were migrants in 72% of these cases
+  # if their ethnicity was given (second row), they were migrants in 72% of these cases
+# grouped by source:
+table(articles[articles$source == "SZ", "ethn_perp", drop = T], articles[articles$source == "SZ", "migr_perp", drop = T])
+  # SZ: if ethnicity of perp given (7 articles), all of them were migrants
+table(articles[articles$source == "Spiegel", "ethn_perp", drop = T], articles[articles$source == "Spiegel", "migr_perp", drop = T])
+  # Spiegel: if ethnicity given (5 articles), in 2 of them the perp was migrant
+table(articles[articles$source == "FAZ", "ethn_perp", drop = T], articles[articles$source == "FAZ", "migr_perp", drop = T])
+  # FAZ: if ethnicity given (10 articles), in 6 of them the perp was migrant
+table(articles[articles$source == "Bild", "ethn_perp", drop = T], articles[articles$source == "Bild", "migr_perp", drop = T])
+  # Bild: if ethnicity given (32 articles), in 24 of them the perp was migrant
+
 
 
 # migr_perp: around half did not give info on ethnicity, so also no info on migration history
@@ -81,40 +115,20 @@ table(articles$migr_perp, articles$language_passive)/rowSums(table(articles$migr
   # use of active language in 66% of cases if migrant, compared to 62% if not migrant
 # struct_context_no | migr_perp
 table(articles$migr_perp, articles$struct_context_no)/rowSums(table(articles$migr_perp, articles$struct_context_no))
-  # among cases with migrant offender, more articles with no structural context compared to cases with non-migrant offender
+  # among cases with migrant offender, 10 PP more articles with no structural context compared to cases with non-migrant offender
+  # -> "surprising": means with migrant offender, more individualistic discourse; could have expected more structural/societal
 # struct_problem_no | migr_perp
-table(articles$migr_perp, articles$struct_problem_no)
+table(articles$migr_perp, articles$struct_problem_no)/rowSums(table(articles$migr_perp, articles$struct_problem_no))
   # about as many articles without structural discourse among migrant and non-migrant offenders
 # blame_perp | migr_perp
 table(articles$migr_perp, articles$blame_perp)/rowSums(table(articles$migr_perp, articles$blame_perp))
-# about as many for migrant and non-migrant
-
-# source
-table(articles$source)  # more than half from Bild
-# ipv_not_in_text | source
-table(articles$source, articles$ipv_not_in_text)
-  # most balanced for SZ, least for Bild which did not use term "IPV/DV" often
-# episodic_framing | source
-table(articles$source, articles$episodic_framing)/rowSums(table(articles$source, articles$episodic_framing))
-  # Bild used episodic framing the most, but overall similar proportions
-# language_passive | source: for each newspaper, how often used passive/active language?
-table(articles$source, articles$language_passive)/rowSums(table(articles$source, articles$language_passive))
-  # Spiegel used passive language (=2) the most, Bild the least
-# ethn_victim | source
-table(articles$source, articles$ethn_victim)/rowSums(table(articles$source, articles$ethn_victim))
-  # proportionally, FAZ mentioned victim's ethnicity most
-# ethn_perp | source
-table(articles$source, articles$ethn_perp)/rowSums(table(articles$source, articles$ethn_perp))
-  # FAZ and SZ mentioned perpetrator's ethnicity most
-# blame_victim | source
-table(articles$source, articles$blame_victim)  
-  # victim blaming only perceived for Bild articles
+  # about as many for migrant and non-migrant
 
 
 ##### Fließtext descriptions for ipv_type, gender_author, gender_victim bc multi-class ----
 
 # ipv_type: physical (1), psychological (2) or both (3)
-table(articles$ipv_type)/nrow(articles)  # no articles with only psychological, 84% on physical
+table(articles$ipv_type)/nrow(articles)  # no articles with only psychological, 84% on physical -> compare with PKS!
 
 # gender_author
 table(articles$gender_author)/nrow(articles) # most male (38%), then female (23%), then AI (20%)
@@ -156,9 +170,9 @@ ggplot(q2, aes(x = factor(variable), fill = factor(value))) +
         axis.title.y = element_blank(),
         axis.text.y = element_text(size = 10),
         legend.title = element_blank(),
-        panel.grid.major = element_line(colour = "grey"),
-        panel.grid.minor = element_line(colour = "lightgrey"))
-ggsave("ling_framing.png", path = "./plots")
+        panel.grid.major = element_line(colour = "lightgrey"),
+        panel.grid.minor = element_line(colour = "lightgrey", linetype = "dashed"))
+ggsave("ling_framing.png", path = "./plots", width = 8)
 
 # attack_quarrel
 table(articles$attack_quarrel)/nrow(articles) # ~7.7% circumscribed attack as quarrel/argument/disagreement
@@ -212,14 +226,16 @@ ggplot(q2_faceted, aes(x = variable, fill = factor(value))) +
     "blame_victim" = "Victim is blamed",
     "blame_perp" = "Perpetrator's behaviour justified\nwith psychological state",
     "attack_quarrel" = "Assault/Attack as 'fight'/'quarrel'")) +
-  theme(plot.title = element_text(hjust = 0.5),
+  theme(plot.title = element_text(hjust = 0.5, size = 12),
         strip.text = element_text(size = 12),
         axis.title.y = element_blank(),
-        axis.text.y = element_text(size = 10),
+        axis.text.y = element_text(size = 9),
         legend.title = element_blank(),
-        panel.grid.major = element_line(colour = "grey"),
-        panel.grid.minor = element_line(colour = "lightgrey"))
-ggsave("ling_framing_faceted.png", path = "./plots")
+        panel.grid.major = element_line(colour = "lightgrey"),
+        panel.grid.minor = element_line(colour = "lightgrey", linetype = "dashed"))
+ggsave("ling_framing_faceted.png", path = "./plots", width = 9, height = 5)
+
+# victim blaming only perceived for Bild articles!
 
 
 
@@ -228,7 +244,7 @@ q3 <- articles %>%
   dplyr::select(struct_context_no, struct_problem_no, episodic_framing) %>%
   gather(variable, value)
 ggplot(q3, aes(x = factor(variable), fill = factor(value))) +
-  geom_bar(position = "fill") +
+  geom_bar(position = "fill", width = 0.8) +
   labs(y = "Proportion",
        title = "Missing Contextualisation") +
   scale_fill_brewer(palette = 7,
@@ -236,17 +252,93 @@ ggplot(q3, aes(x = factor(variable), fill = factor(value))) +
   scale_x_discrete(labels = c(
     "episodic_framing" = "Incident framed in episodic way",
     "struct_context_no" = "Similar past incidents not mentioned",
-    "struct_problem_no" = "IPV not addressed as structural problem")) +
+    "struct_problem_no" = "  IPV not addressed as structural problem")) +
   theme(plot.title = element_text(hjust = 0.5),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(size = 12),
+        axis.text.x = element_text(size = 10),
         legend.title = element_blank(),
-        panel.grid.major = element_line(colour = "grey"),
-        panel.grid.minor = element_line(colour = "lightgrey"))
-ggsave("context.png", path = "./plots")
+        panel.grid.major = element_line(colour = "lightgrey"),
+        panel.grid.minor = element_line(colour = "lightgrey", linetype = "dashed"))
+ggsave("context.png", path = "./plots", width = 9.5)
 # episodic_framing:  ~ 2/3 described incident as single, isolated (no history of incidents within relationship was given)
 # struct_context_no: ~77% did not embed the incident in broader context, i.e. did not mention other similar cases
 # struct_problem_no: ~10% described incident as structural issue, rest without any discourse on the problem
+
+
+# by source
+
+# 3 variables -> 3 shades of orange
+# within each variable: light = False, dark = True
+colour_map <- c(
+  "episodic_framing_1" = "#f5deb3",
+  "episodic_framing_2"  = "#ffae42",
+  "struct_context_no_1" = "#edc9af",
+  "struct_context_no_2"  = "#e25822",
+  "struct_problem_no_1" = "#ffcba4",
+  "struct_problem_no_2"  = "#fd8d3c")
+
+q3_faceted <- articles %>%
+  select(source,
+         struct_context_no, struct_problem_no, episodic_framing) %>%
+  pivot_longer(cols = -source, names_to = "variable", values_to = "value") %>%
+  mutate(fill_key = paste(variable, value, sep = "_"))  # combined mapping key (all combos of var + 1/2)
+
+ggplot(q3_faceted, aes(x = variable, fill = fill_key)) +
+  geom_bar(position = "fill", width = 0.8) +
+  facet_grid(~fct_relevel(source, "SZ", "FAZ", "Spiegel", "Bild")) +
+  labs(y = "Proportion",
+       title = "Missing Contextualisation by Source") +
+  scale_fill_manual(values = colour_map,
+                    labels = c("episodic_framing_1" = "No episodic framing",
+                               "episodic_framing_2" = "Episodic framing",
+                               "struct_context_no_1" = "Similar past incidents mentioned",
+                               "struct_context_no_2" = "No similar past incidents mentioned",
+                               "struct_problem_no_1" = "IPV addressed as structural problem",
+                               "struct_problem_no_2" = "IPV not addressed as structural problem")) +
+  theme(plot.title = element_text(hjust = 0.5),
+        strip.text = element_text(size = 12),
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        legend.title = element_blank(),
+        legend.position = "bottom",
+        panel.grid.major = element_line(colour = "lightgrey"),
+        panel.grid.minor = element_line(colour = "lightgrey", linetype = "dashed"))
+ggsave("context_faceted_source.png", path = "./plots")
+
+
+# by gender_author
+q3_faceted2 <- articles %>%
+  select(gender_author,
+         struct_context_no, struct_problem_no, episodic_framing) %>%
+  pivot_longer(cols = -gender_author, names_to = "variable", values_to = "value")  %>%
+  mutate(fill_key = paste(variable, value, sep = "_"))  # combined mapping key
+ggplot(q3_faceted2, aes(x = variable, fill = fill_key)) +
+  geom_bar(position = "fill", width = 0.8) +
+  facet_grid(~ gender_author,
+             labeller = as_labeller(c("1" = "Female",
+                                      "2" = "Male",
+                                      "3" = "Both",
+                                      "4" = "AI",
+                                      "5" = "Press Agency",
+                                      "NA" = "Unknown"))) +
+  labs(y = "Proportion",
+       title = "Missing Contextualisation by Author's Gender") +
+  scale_fill_manual(values = colour_map,
+                    labels = c("episodic_framing_1" = "No episodic framing",
+                               "episodic_framing_2" = "Episodic framing",
+                               "struct_context_no_1" = "Similar past incidents mentioned",
+                               "struct_context_no_2" = "No similar past incidents mentioned",
+                               "struct_problem_no_1" = "IPV addressed as structural problem",
+                               "struct_problem_no_2" = "IPV not addressed as structural problem")) +
+  theme(plot.title = element_text(hjust = 0.5),
+        strip.text = element_text(size = 9),
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        legend.title = element_blank(),
+        legend.position = "bottom",
+        panel.grid.major = element_line(colour = "lightgrey"),
+        panel.grid.minor = element_line(colour = "lightgrey", linetype = "dashed"))
+ggsave("context_faceted_author.png", path = "./plots")
 
 
 
