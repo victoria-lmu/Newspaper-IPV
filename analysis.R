@@ -143,6 +143,10 @@ table(articles$gender_victim, articles$language_passive)
 table(articles$gender_victim, articles$blame_victim)
 # only victim blaming in case of female victims (but limited representativeness bc very few on male)
 
+# gender perpetrator:
+# 121 cases of female victims -> 121 + 1 (Eishockey) male perpetrators
+# 4 female perpetrators
+# 2 perpetrators of both genders
 
 
 #### 2) Linguistic Framing ----
@@ -171,6 +175,7 @@ ggplot(q2, aes(x = factor(variable), fill = factor(value))) +
         axis.text.y = element_text(size = 10),
         legend.title = element_blank(),
         legend.text = element_text(size = 10),
+        legend.position = "bottom", 
         panel.grid.major = element_line(colour = "lightgrey"),
         panel.grid.minor = element_line(colour = "lightgrey", linetype = "dashed"))
 ggsave("ling_framing.png", path = "./plots", width = 8)
@@ -208,7 +213,15 @@ q2_faceted <- articles %>%
          incident_not_in_title, ipv_not_in_title, ipv_not_in_text,
          blame_victim, blame_perp,
          attack_quarrel, murder_tragedy, language_passive) %>%
-  pivot_longer(cols = -source, names_to = "variable", values_to = "value")
+  pivot_longer(cols = -source, names_to = "variable", values_to = "value") %>%
+  mutate(variable = factor(variable, levels = c("language_passive",
+                                                "blame_perp",
+                                                "blame_victim",
+                                                "incident_not_in_title",
+                                                "ipv_not_in_title",
+                                                "ipv_not_in_text",
+                                                "murder_tragedy",
+                                                "attack_quarrel")))
 ggplot(q2_faceted, aes(x = variable, fill = factor(value))) +
   geom_bar(position = "fill", width = 0.8) +
   coord_flip() +
@@ -232,6 +245,7 @@ ggplot(q2_faceted, aes(x = variable, fill = factor(value))) +
         axis.title.y = element_blank(),
         axis.text.y = element_text(size = 9),
         legend.title = element_blank(),
+        legend.position = "bottom",
         panel.grid.major = element_line(colour = "lightgrey"),
         panel.grid.minor = element_line(colour = "lightgrey", linetype = "dashed"))
 ggsave("ling_framing_faceted.png", path = "./plots", width = 9, height = 5)
