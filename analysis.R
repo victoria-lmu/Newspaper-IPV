@@ -234,8 +234,8 @@ ggplot(q2_faceted, aes(x = variable, fill = factor(value))) +
   scale_x_discrete(labels = c(
     "murder_tragedy" = "Murder as 'tragedy'",
     "language_passive" = "Passive Language",
-    "ipv_not_in_title" = "IPV not in title",
-    "ipv_not_in_text" = "IPV not in text",
+    "ipv_not_in_title" = "Not clear from title that article on IPV",
+    "ipv_not_in_text" = "Term 'IPV' not in text",
     "incident_not_in_title" = "Incident not in title",
     "blame_victim" = "Victim is blamed",
     "blame_perp" = "Perpetrator's behaviour justified\nwith psychological state",
