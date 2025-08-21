@@ -232,7 +232,7 @@ ggplot(q2_faceted, aes(x = variable, fill = factor(value))) +
   scale_fill_manual(values = c("lightblue", "lightblue4", "gray90"),
                     labels = c("False", "True")) +
   scale_x_discrete(labels = c(
-    "murder_tragedy" = "Murder as tragedy",
+    "murder_tragedy" = "Murder as 'tragedy'",
     "language_passive" = "Passive Language",
     "ipv_not_in_title" = "IPV not in title",
     "ipv_not_in_text" = "IPV not in text",
