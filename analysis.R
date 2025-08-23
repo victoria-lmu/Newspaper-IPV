@@ -170,7 +170,7 @@ ggplot(q2, aes(x = factor(variable), fill = factor(value))) +
                               "blame_victim" = "Victim is blamed",
                               "blame_perp" = "Perpetrator's behaviour justified\n with psychological state",
                               "attack_quarrel" = "Assault/Attack as 'fight'/'quarrel'")) +
-  theme(plot.title = element_text(hjust = 0.5),
+  theme(plot.title = element_blank(),
         axis.title.y = element_blank(),
         axis.text.y = element_text(size = 10),
         legend.title = element_blank(),
