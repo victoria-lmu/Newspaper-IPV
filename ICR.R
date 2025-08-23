@@ -3,6 +3,7 @@
 ###############################
 
 library(tidycomm)
+library(xtable)
 
 source("setup.R")
 
@@ -68,3 +69,7 @@ ICR <- test_icr(data = articles_long,
 print(ICR_nas)
 
 print(ICR)
+
+print(xtable(ICR), include.rownames = FALSE)
+
+print(xtable(ICR_nas), include.rownames = FALSE)

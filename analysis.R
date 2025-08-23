@@ -143,10 +143,6 @@ table(articles$gender_victim, articles$language_passive)
 table(articles$gender_victim, articles$blame_victim)
 # only victim blaming in case of female victims (but limited representativeness bc very few on male)
 
-# gender perpetrator:
-# 121 cases of female victims -> 121 + 1 (Eishockey) male perpetrators
-# 4 female perpetrators
-# 2 perpetrators of both genders
 
 
 #### 2) Linguistic Framing ----
@@ -175,7 +171,6 @@ ggplot(q2, aes(x = factor(variable), fill = factor(value))) +
         axis.text.y = element_text(size = 10),
         legend.title = element_blank(),
         legend.text = element_text(size = 10),
-        legend.position = "bottom", 
         panel.grid.major = element_line(colour = "lightgrey"),
         panel.grid.minor = element_line(colour = "lightgrey", linetype = "dashed"))
 ggsave("ling_framing.png", path = "./plots", width = 8)
@@ -213,15 +208,7 @@ q2_faceted <- articles %>%
          incident_not_in_title, ipv_not_in_title, ipv_not_in_text,
          blame_victim, blame_perp,
          attack_quarrel, murder_tragedy, language_passive) %>%
-  pivot_longer(cols = -source, names_to = "variable", values_to = "value") %>%
-  mutate(variable = factor(variable, levels = c("language_passive",
-                                                "blame_perp",
-                                                "blame_victim",
-                                                "incident_not_in_title",
-                                                "ipv_not_in_title",
-                                                "ipv_not_in_text",
-                                                "murder_tragedy",
-                                                "attack_quarrel")))
+  pivot_longer(cols = -source, names_to = "variable", values_to = "value")
 ggplot(q2_faceted, aes(x = variable, fill = factor(value))) +
   geom_bar(position = "fill", width = 0.8) +
   coord_flip() +
@@ -232,7 +219,7 @@ ggplot(q2_faceted, aes(x = variable, fill = factor(value))) +
   scale_fill_manual(values = c("lightblue", "lightblue4", "gray90"),
                     labels = c("False", "True")) +
   scale_x_discrete(labels = c(
-    "murder_tragedy" = "Murder as 'tragedy'",
+    "murder_tragedy" = "Murder as tragedy",
     "language_passive" = "Passive Language",
     "ipv_not_in_title" = "Not clear from title that article on IPV",
     "ipv_not_in_text" = "Term 'IPV' not in text",
@@ -240,12 +227,11 @@ ggplot(q2_faceted, aes(x = variable, fill = factor(value))) +
     "blame_victim" = "Victim is blamed",
     "blame_perp" = "Perpetrator's behaviour justified\nwith psychological state",
     "attack_quarrel" = "Assault/Attack as 'fight'/'quarrel'")) +
-  theme(plot.title = element_blank(),
+  theme(plot.title = element_text(hjust = 0.5, size = 12),
         strip.text = element_text(size = 12),
         axis.title.y = element_blank(),
         axis.text.y = element_text(size = 9),
         legend.title = element_blank(),
-        legend.position = "bottom",
         panel.grid.major = element_line(colour = "lightgrey"),
         panel.grid.minor = element_line(colour = "lightgrey", linetype = "dashed"))
 ggsave("ling_framing_faceted.png", path = "./plots", width = 9, height = 5)
@@ -300,7 +286,7 @@ q3_faceted <- articles %>%
 
 ggplot(q3_faceted, aes(x = variable, fill = fill_key)) +
   geom_bar(position = "fill", width = 0.8) +
-  facet_grid(~fct_relevel(source, "SZ", "Spiegel", "FAZ", "Bild")) +
+  facet_grid(~fct_relevel(source, "SZ", "FAZ", "Spiegel", "Bild")) +
   labs(y = "Proportion",
        title = "Missing Contextualisation by Source") +
   scale_fill_manual(values = colour_map,
@@ -310,12 +296,12 @@ ggplot(q3_faceted, aes(x = variable, fill = fill_key)) +
                                "struct_context_no_2" = "No similar past incidents mentioned",
                                "struct_problem_no_1" = "IPV addressed as structural problem",
                                "struct_problem_no_2" = "IPV not addressed as structural problem")) +
-  theme(plot.title = element_blank(),
+  theme(plot.title = element_text(hjust = 0.5),
         strip.text = element_text(size = 12),
         axis.title.x = element_blank(),
         axis.text.x = element_blank(),
         legend.title = element_blank(),
-        legend.text = element_text(size = 8.5),
+        legend.text = element_text(size = 7.5),
         legend.position = "bottom",
         panel.grid.major = element_line(colour = "lightgrey"),
         panel.grid.minor = element_line(colour = "lightgrey", linetype = "dashed"))
@@ -346,12 +332,12 @@ ggplot(q3_faceted2, aes(x = variable, fill = fill_key)) +
                                "struct_context_no_2" = "No similar past incidents mentioned",
                                "struct_problem_no_1" = "IPV addressed as structural problem",
                                "struct_problem_no_2" = "IPV not addressed as structural problem")) +
-  theme(plot.title = element_blank(),
-        strip.text = element_text(size = 12),
+  theme(plot.title = element_text(hjust = 0.5),
+        strip.text = element_text(size = 9),
         axis.title.x = element_blank(),
         axis.text.x = element_blank(),
         legend.title = element_blank(),
-        legend.text = element_text(size = 8.5),
+        legend.text = element_text(size = 7.5),
         legend.position = "bottom",
         panel.grid.major = element_line(colour = "lightgrey"),
         panel.grid.minor = element_line(colour = "lightgrey", linetype = "dashed"))
