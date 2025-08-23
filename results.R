@@ -41,3 +41,60 @@ articles <- articles %>%
   # )
 
 
+# murder_tragedy, gender_author
+
+table(articles$gender_author, articles$murder_tragedy)/rowSums(table(articles$gender_author, articles$murder_tragedy))
+
+# attack_quarrel, gender_author
+
+table(articles$gender_author, articles$attack_quarrel)/rowSums(table(articles$gender_author, articles$attack_quarrel))
+
+table(articles$gender_author, articles$language_passive)/rowSums(table(articles$gender_author, articles$language_passive))
+
+
+ipv_text_gender <- table(articles$gender_author, articles$ipv_not_in_text)/rowSums(table(articles$gender_author, articles$attack_quarrel))
+
+
+print(xtable(ipv_text_gender), include.rownames = FALSE)
+
+
+q2_faceted <- articles %>%
+  select(gender_author,
+         incident_not_in_title, ipv_not_in_title, ipv_not_in_text,
+         blame_victim, blame_perp,
+         attack_quarrel, murder_tragedy, language_passive) %>%
+  pivot_longer(cols = -gender_author, names_to = "variable", values_to = "value") %>%
+  mutate(variable = factor(variable, levels = c("language_passive",
+                                                "blame_perp",
+                                                "blame_victim",
+                                                "incident_not_in_title",
+                                                "ipv_not_in_title",
+                                                "ipv_not_in_text",
+                                                "murder_tragedy",
+                                                "attack_quarrel")))
+ggplot(q2_faceted, aes(x = variable, fill = factor(value))) +
+  geom_bar(position = "fill", width = 0.8) +
+  coord_flip() +
+  # order so that left-leaning newspapers in left column, right in right
+  facet_wrap(~forcats::fct_relevel(gender_author, "Female", "Male", "Both", "AI", "Press Agency", "No Author found")) + 
+  labs(y = "Proportion",
+       title = "Linguistic Framing by gender") +
+  scale_fill_manual(values = c("lightblue", "lightblue4", "gray90"),
+                    labels = c("False", "True")) +
+  scale_x_discrete(labels = c(
+    "murder_tragedy" = "Murder as 'tragedy'",
+    "language_passive" = "Passive Language",
+    "ipv_not_in_title" = "IPV not in title",
+    "ipv_not_in_text" = "IPV not in text",
+    "incident_not_in_title" = "Incident not in title",
+    "blame_victim" = "Victim is blamed",
+    "blame_perp" = "Perpetrator's behaviour justified\nwith psychological state",
+    "attack_quarrel" = "Assault/Attack as 'fight'/'quarrel'")) +
+  theme(plot.title = element_blank(),
+        strip.text = element_text(size = 12),
+        axis.title.y = element_blank(),
+        axis.text.y = element_text(size = 9),
+        legend.title = element_blank(),
+        legend.position = "bottom",
+        panel.grid.major = element_line(colour = "lightgrey"),
+        panel.grid.minor = element_line(colour = "lightgrey", linetype = "dashed"))
