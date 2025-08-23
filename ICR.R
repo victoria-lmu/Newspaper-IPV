@@ -71,3 +71,5 @@ print(ICR_nas)
 print(ICR)
 
 print(xtable(ICR), include.rownames = FALSE)
+
+print(xtable(ICR_nas), include.rownames = FALSE)
