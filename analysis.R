@@ -154,7 +154,15 @@ q2 <- articles %>%
   dplyr::select(incident_not_in_title, ipv_not_in_title, ipv_not_in_text,
                 blame_victim, blame_perp,
                 attack_quarrel, murder_tragedy, language_passive) %>%
-  gather(variable, value)
+  gather(variable, value) %>%
+  mutate(variable = factor(variable, levels = c("language_passive",
+                                                "blame_perp",
+                                                "blame_victim",
+                                                "incident_not_in_title",
+                                                "ipv_not_in_title",
+                                                "ipv_not_in_text",
+                                                "murder_tragedy",
+                                                "attack_quarrel")))
 ggplot(q2, aes(x = factor(variable), fill = factor(value))) +
   geom_bar(position = "fill",  width = 0.8) +
   coord_flip() +
@@ -178,7 +186,7 @@ ggplot(q2, aes(x = factor(variable), fill = factor(value))) +
         legend.position = "bottom", 
         panel.grid.major = element_line(colour = "lightgrey"),
         panel.grid.minor = element_line(colour = "lightgrey", linetype = "dashed"))
-ggsave("ling_framing.png", path = "./plots", width = 8)
+ggsave("ling_framing.png", path = "./plots", width = 9, height = 5)
 
 # attack_quarrel
 table(articles$attack_quarrel)/nrow(articles) # ~7.7% circumscribed attack as quarrel/argument/disagreement
